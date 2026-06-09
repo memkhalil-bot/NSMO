@@ -2,6 +2,7 @@ import path from "path";
 import { defineConfig, loadEnv } from "vite";
 import tsConfigPaths from "vite-tsconfig-paths";
 import { cloudflare } from "@cloudflare/vite-plugin";
+import { nitro } from "nitro/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
@@ -162,9 +163,11 @@ function devServerFnErrorLogger() {
 
 export default defineConfig(({ command, mode }) => {
   // CF_PAGES=1 is set automatically by Cloudflare Pages builds.
-  // Without it (e.g. on Vercel) we skip the CF plugin so TanStack Start
-  // produces a Node.js-compatible SSR bundle that Vercel can execute.
+  // Without it (e.g. on Vercel) we use the nitro() Vite plugin instead,
+  // which generates Vercel Build Output API format with proper function
+  // definitions and routing when VERCEL=1 is set by the Vercel build system.
   const useCloudflare = command === "build" && process.env.CF_PAGES === "1";
+  const useNitro = command === "build" && !useCloudflare;
 
   // Load VITE_ env vars and define them for SSR
   const env = loadEnv(mode, process.cwd(), "VITE_");
@@ -194,6 +197,7 @@ export default defineConfig(({ command, mode }) => {
       devServerFnErrorLogger(),
       ...(useCloudflare ? [cloudflare({ viteEnvironment: { name: "ssr" } })] : []),
       tanstackStart(),
+      ...(useNitro ? [nitro()] : []),
       viteReact(),
       mode === "development" && componentTagger(),
     ].filter(Boolean),
