@@ -161,7 +161,10 @@ function devServerFnErrorLogger() {
 }
 
 export default defineConfig(({ command, mode }) => {
-  const useCloudflare = command === "build";
+  // CF_PAGES=1 is set automatically by Cloudflare Pages builds.
+  // Without it (e.g. on Vercel) we skip the CF plugin so TanStack Start
+  // produces a Node.js-compatible SSR bundle that Vercel can execute.
+  const useCloudflare = command === "build" && process.env.CF_PAGES === "1";
 
   // Load VITE_ env vars and define them for SSR
   const env = loadEnv(mode, process.cwd(), "VITE_");
