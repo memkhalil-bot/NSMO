@@ -1,8 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import dohaImg from "@/assets/nsmo-doha.jpg";
 import saduImg from "@/assets/sadu-pattern.png";
-import nsmoLogo from "@/assets/nsmo-logo.asset.json";
-import nsmoLogoFooter from "@/assets/nsmo-logo-footer.asset.json";
 import {
   Target, Users, ShieldCheck, Building2, Briefcase, Award, BadgeCheck,
   LineChart, ClipboardList, ArrowLeft, MapPin, Mail, Phone,
@@ -172,7 +170,7 @@ function Nav() {
     <nav className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b-2 border-[var(--maroon)]">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
-          <img src={nsmoLogo.url} alt="شعار نسمو" className="h-10 w-auto" />
+          <img src="/images/logos/nsmo-logo.png" alt="NSMO Logo" className="h-10 w-auto md:w-44 md:h-auto" />
         </Link>
         <div className="hidden md:flex items-center gap-8 text-sm font-medium">
           <a href="#why" className="hover:text-[var(--maroon)] transition-colors">لماذا نسمو</a>
@@ -493,7 +491,7 @@ function HomePage() {
         <div className="max-w-7xl mx-auto px-6 py-14 grid md:grid-cols-3 gap-10">
           <div>
             <div className="flex items-center gap-3 bg-white px-3 py-2 rounded-sm inline-flex">
-              <img src={nsmoLogoFooter.url} alt="شعار نسمو" className="h-12 w-auto" />
+              <img src="/images/logos/nsmo-logo.png" alt="NSMO Logo" className="h-12 w-auto" />
             </div>
             <p className="mt-5 text-sm leading-[1.9] text-white/65">
               شريك مؤسسي قطري متخصص في تحويل الاستراتيجية إلى نتائج، انسجامًا مع رؤية قطر الوطنية 2030.

@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Infinity as InfinityIcon, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import shadowBg from "@/assets/shadow-bg.jpg";
 
@@ -78,9 +78,8 @@ function LoginPage() {
 
       <div className="max-w-sm w-full animate-fade-up-blur relative z-10">
         {/* Logo — links home */}
-        <Link to="/" className="flex items-center justify-center gap-2.5 mb-8 hover:opacity-80 transition-opacity">
-          <InfinityIcon className="w-7 h-7 text-foreground" strokeWidth={2.5} />
-          <span className="text-xl font-semibold text-foreground tracking-tight">Continuum</span>
+        <Link to="/" className="flex items-center justify-center mb-8 hover:opacity-80 transition-opacity">
+          <img src="/images/logos/nsmo-logo.png" alt="NSMO Logo" className="w-36 h-auto" />
         </Link>
 
         {/* Card */}
