@@ -9,70 +9,60 @@ import {
 import { useTranslation } from "@/lib/i18n";
 import type { Lang } from "@/lib/i18n";
 
-const clientLogoModules = import.meta.glob("@/assets/clients/*.asset.json", { eager: true }) as Record<string, { default: { url: string } }>;
+type ClientLogo = { src: string; name: string; site?: string };
 
-// Map of logo file index (image{N} from source PPTX) → { name, website }
-const CLIENT_META: Record<number, { name: string; site?: string }> = {
-  2: { name: "الأهلي كابيتال", site: "https://www.alahlicapital.com" },
-  3: { name: "الجزيرة كابيتال", site: "https://www.aljaziracapital.com.sa" },
-  4: { name: "وزارة الصحة - السعودية", site: "https://www.moh.gov.sa" },
-  5: { name: "وزارة الموارد البشرية والتنمية الاجتماعية", site: "https://www.hrsd.gov.sa" },
-  6: { name: "إكسترا", site: "https://www.extra.com" },
-  7: { name: "مصرف الراجحي", site: "https://www.alrajhibank.com.sa" },
-  8: { name: "بنك التنمية الاجتماعية", site: "https://www.sdb.gov.sa" },
-  9: { name: "وزارة الإسكان - السعودية", site: "https://www.housing.gov.sa" },
-  10: { name: "دُلني", site: "https://www.dulani.com" },
-  11: { name: "لبيه", site: "https://labayh.net" },
-  12: { name: "هناك", site: "https://hunak.qa" },
-  13: { name: "مؤسسة سالم بن محفوظ", site: "https://www.sbmfoundation.com" },
-  14: { name: "جامعة الحدود الشمالية", site: "https://www.nbu.edu.sa" },
-  15: { name: "جامعة قطر", site: "https://www.qu.edu.qa" },
-  16: { name: "مالتي باك", site: "https://multipackindustries.com" },
-  17: { name: "سكتور ستيل الدوحة", site: "https://www.sectorsteel.com" },
-  18: { name: "الهلال الأحمر القطري", site: "https://www.qrcs.org.qa" },
-  19: { name: "وزارة الثقافة - قطر", site: "https://www.moc.gov.qa" },
-  20: { name: "وزارة الداخلية - قطر", site: "https://www.moi.gov.qa" },
-  21: { name: "ديوان الخدمة والتطوير الحكومي - قطر", site: "https://www.csb.gov.qa" },
-  22: { name: "الهيئة العامة للجمارك - قطر", site: "https://www.customs.gov.qa" },
-  23: { name: "جهاز التخطيط والإحصاء", site: "https://www.psa.gov.qa" },
-  24: { name: "وزارة التجارة والصناعة - قطر", site: "https://www.moci.gov.qa" },
-  25: { name: "ديوان المحاسبة - قطر", site: "https://www.sab.gov.qa" },
-  26: { name: "المجلس الأعلى للقضاء - قطر", site: "https://www.sjc.gov.qa" },
-  27: { name: "كهرماء", site: "https://www.km.qa" },
-  28: { name: "وكالة الأنباء القطرية", site: "https://www.qna.org.qa" },
-  29: { name: "القطرية", site: "https://www.qatarairways.com" },
-  30: { name: "Ooredoo", site: "https://www.ooredoo.qa" },
-  31: { name: "الهيئة العامة للضرائب - قطر", site: "https://www.gta.gov.qa" },
-  32: { name: "قطر تستحق الأفضل", site: "https://www.gco.gov.qa" },
-  33: { name: "تكامل", site: "https://takamol.com.sa" },
-  34: { name: "اللجنة الوطنية لحقوق الإنسان", site: "https://www.nhrc-qa.org" },
-  35: { name: "وزارة الصحة العامة - قطر", site: "https://www.moph.gov.qa" },
-  36: { name: "MBCC", site: "https://www.maaden.com.sa" },
-  37: { name: "معادن", site: "https://www.maaden.com.sa" },
-  38: { name: "Z Corporate" },
-  39: { name: "البنك الأهلي القطري", site: "https://www.ahlibank.com.qa" },
-  40: { name: "سكتور ستيل الدوحة", site: "https://www.sectorsteel.com" },
-  41: { name: "مستشفيات دار الفؤاد", site: "https://www.daralfouad-hospital.com" },
-  42: { name: "عصفور كريستال", site: "https://www.asfourcrystal.com" },
-  43: { name: "Hassob Labs" },
-  44: { name: "هليوبوليس للتعمير", site: "https://www.hdg.com.eg" },
-  45: { name: "الديوان الأميري", site: "https://www.diwan.gov.qa" },
-  46: { name: "حكومة دبي", site: "https://www.dubai.ae" },
-  47: { name: "بنك قطر الوطني QNB", site: "https://www.qnb.com" },
-  48: { name: "جامعة الملك خالد", site: "https://www.kku.edu.sa" },
-  49: { name: "جامعة الملك سعود", site: "https://www.ksu.edu.sa" },
-  50: { name: "جامعة أم القرى", site: "https://www.uqu.edu.sa" },
-};
-
-type ClientLogo = { url: string; name: string; site?: string };
-const CLIENT_LOGOS: ClientLogo[] = Object.entries(clientLogoModules)
-  .map(([path, m]) => {
-    const n = parseInt(path.match(/logo(\d+)/)?.[1] ?? "0", 10);
-    const meta = CLIENT_META[n] ?? { name: "—" };
-    return { url: m.default.url, name: meta.name, site: meta.site, _n: n };
-  })
-  .sort((a, b) => a._n - b._n)
-  .map(({ url, name, site }) => ({ url, name, site }));
+const CLIENT_LOGOS: ClientLogo[] = [
+  { src: "/images/clients/client-logo-01.jpeg", name: "عميل" },
+  { src: "/images/clients/client-logo-02.png",  name: "الأهلي كابيتال",                         site: "https://www.alahlicapital.com" },
+  { src: "/images/clients/client-logo-03.png",  name: "الجزيرة كابيتال",                        site: "https://www.aljaziracapital.com.sa" },
+  { src: "/images/clients/client-logo-04.jpg",  name: "وزارة الصحة — السعودية",                 site: "https://www.moh.gov.sa" },
+  { src: "/images/clients/client-logo-05.jpg",  name: "وزارة الموارد البشرية والتنمية الاجتماعية", site: "https://www.hrsd.gov.sa" },
+  { src: "/images/clients/client-logo-06.jpg",  name: "إكسترا",                                 site: "https://www.extra.com" },
+  { src: "/images/clients/client-logo-07.jpg",  name: "مصرف الراجحي",                           site: "https://www.alrajhibank.com.sa" },
+  { src: "/images/clients/client-logo-08.png",  name: "بنك التنمية الاجتماعية",                 site: "https://www.sdb.gov.sa" },
+  { src: "/images/clients/client-logo-09.png",  name: "وزارة الإسكان — السعودية",               site: "https://www.housing.gov.sa" },
+  { src: "/images/clients/client-logo-10.jpg",  name: "دُلني",                                  site: "https://www.dulani.com" },
+  { src: "/images/clients/client-logo-11.png",  name: "لبيه",                                   site: "https://labayh.net" },
+  { src: "/images/clients/client-logo-12.png",  name: "هناك",                                   site: "https://hunak.qa" },
+  { src: "/images/clients/client-logo-13.png",  name: "مؤسسة سالم بن محفوظ",                   site: "https://www.sbmfoundation.com" },
+  { src: "/images/clients/client-logo-14.png",  name: "جامعة الحدود الشمالية",                 site: "https://www.nbu.edu.sa" },
+  { src: "/images/clients/client-logo-15.jpeg", name: "جامعة قطر",                              site: "https://www.qu.edu.qa" },
+  { src: "/images/clients/client-logo-16.png",  name: "مالتي باك",                              site: "https://multipackindustries.com" },
+  { src: "/images/clients/client-logo-17.png",  name: "سكتور ستيل الدوحة",                     site: "https://www.sectorsteel.com" },
+  { src: "/images/clients/client-logo-18.png",  name: "الهلال الأحمر القطري",                  site: "https://www.qrcs.org.qa" },
+  { src: "/images/clients/client-logo-19.png",  name: "وزارة الثقافة — قطر",                   site: "https://www.moc.gov.qa" },
+  { src: "/images/clients/client-logo-20.jpeg", name: "وزارة الداخلية — قطر",                  site: "https://www.moi.gov.qa" },
+  { src: "/images/clients/client-logo-21.png",  name: "ديوان الخدمة والتطوير الحكومي — قطر",   site: "https://www.csb.gov.qa" },
+  { src: "/images/clients/client-logo-22.png",  name: "الهيئة العامة للجمارك — قطر",           site: "https://www.customs.gov.qa" },
+  { src: "/images/clients/client-logo-23.png",  name: "جهاز التخطيط والإحصاء",                 site: "https://www.psa.gov.qa" },
+  { src: "/images/clients/client-logo-24.png",  name: "وزارة التجارة والصناعة — قطر",          site: "https://www.moci.gov.qa" },
+  { src: "/images/clients/client-logo-25.png",  name: "ديوان المحاسبة — قطر",                  site: "https://www.sab.gov.qa" },
+  { src: "/images/clients/client-logo-26.jpeg", name: "المجلس الأعلى للقضاء — قطر",            site: "https://www.sjc.gov.qa" },
+  { src: "/images/clients/client-logo-27.png",  name: "كهرماء",                                 site: "https://www.km.qa" },
+  { src: "/images/clients/client-logo-28.jpeg", name: "وكالة الأنباء القطرية",                  site: "https://www.qna.org.qa" },
+  { src: "/images/clients/client-logo-29.jpeg", name: "القطرية",                                site: "https://www.qatarairways.com" },
+  { src: "/images/clients/client-logo-30.png",  name: "Ooredoo",                                site: "https://www.ooredoo.qa" },
+  { src: "/images/clients/client-logo-31.jpeg", name: "الهيئة العامة للضرائب — قطر",           site: "https://www.gta.gov.qa" },
+  { src: "/images/clients/client-logo-32.jpeg", name: "قطر تستحق الأفضل",                      site: "https://www.gco.gov.qa" },
+  { src: "/images/clients/client-logo-33.png",  name: "تكامل",                                  site: "https://takamol.com.sa" },
+  { src: "/images/clients/client-logo-34.jpeg", name: "اللجنة الوطنية لحقوق الإنسان",          site: "https://www.nhrc-qa.org" },
+  { src: "/images/clients/client-logo-35.png",  name: "وزارة الصحة العامة — قطر",              site: "https://www.moph.gov.qa" },
+  { src: "/images/clients/client-logo-36.png",  name: "MBCC" },
+  { src: "/images/clients/client-logo-37.jpeg", name: "معادن",                                  site: "https://www.maaden.com.sa" },
+  { src: "/images/clients/client-logo-38.png",  name: "Z Corporate" },
+  { src: "/images/clients/client-logo-39.jpeg", name: "البنك الأهلي القطري",                   site: "https://www.ahlibank.com.qa" },
+  { src: "/images/clients/client-logo-40.png",  name: "سكتور ستيل الدوحة",                     site: "https://www.sectorsteel.com" },
+  { src: "/images/clients/client-logo-41.jpeg", name: "مستشفيات دار الفؤاد",                   site: "https://www.daralfouad-hospital.com" },
+  { src: "/images/clients/client-logo-42.jpeg", name: "عصفور كريستال",                          site: "https://www.asfourcrystal.com" },
+  { src: "/images/clients/client-logo-43.jpeg", name: "Hassob Labs" },
+  { src: "/images/clients/client-logo-44.png",  name: "هليوبوليس للتعمير",                     site: "https://www.hdg.com.eg" },
+  { src: "/images/clients/client-logo-45.png",  name: "الديوان الأميري",                        site: "https://www.diwan.gov.qa" },
+  { src: "/images/clients/client-logo-46.jpeg", name: "حكومة دبي",                              site: "https://www.dubai.ae" },
+  { src: "/images/clients/client-logo-47.jpeg", name: "بنك قطر الوطني QNB",                    site: "https://www.qnb.com" },
+  { src: "/images/clients/client-logo-48.png",  name: "جامعة الملك خالد",                      site: "https://www.kku.edu.sa" },
+  { src: "/images/clients/client-logo-49.png",  name: "جامعة الملك سعود",                      site: "https://www.ksu.edu.sa" },
+  { src: "/images/clients/client-logo-50.jpeg", name: "جامعة أم القرى",                        site: "https://www.uqu.edu.sa" },
+];
 
 const SERVICE_ICONS = [
   Target, ClipboardList, LineChart, ShieldCheck,
@@ -126,13 +116,13 @@ function QatarBand({ className = "" }: { className?: string }) {
 
 function ClientLogoCard({ logo }: { logo: ClientLogo }) {
   const cardClass =
-    "group flex items-center justify-center h-28 md:h-32 w-full bg-white rounded-lg shadow-sm border border-border/40 p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-[var(--maroon)]";
+    "group flex items-center justify-center h-24 md:h-28 w-full bg-white rounded-xl shadow-sm border border-border/40 p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 hover:border-[var(--maroon)]/40";
   const img = (
     <img
-      src={logo.url}
+      src={logo.src}
       alt={logo.name}
       loading="lazy"
-      className="max-h-20 md:max-h-24 max-w-[80%] object-contain transition-transform duration-300 group-hover:scale-110"
+      className="max-h-16 md:max-h-20 max-w-[85%] w-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300 group-hover:scale-105"
     />
   );
   if (logo.site) {
@@ -416,14 +406,15 @@ function HomePage() {
       </section>
 
       {/* CLIENTS */}
-      <section id="clients" className="relative bg-[var(--cream)] py-20 md:py-24 border-y border-border">
+      <section id="clients" className="relative bg-[var(--cream)] py-20 md:py-28 border-y border-border">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-2xl mx-auto mb-12">
+          <div className="text-center max-w-2xl mx-auto mb-14">
             <p className="text-[11px] tracking-[0.3em] uppercase text-[var(--maroon)] font-bold">{t("clients.label")}</p>
-            <h2 className="mt-4 text-2xl md:text-4xl font-bold">{t("clients.h2")}</h2>
+            <h2 className="mt-3 text-2xl md:text-4xl font-bold">{t("clients.h2")}</h2>
+            <p className="mt-3 text-sm md:text-base text-muted-foreground leading-relaxed">{t("clients.sub")}</p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
             {CLIENT_LOGOS.map((c, i) => (
               <ClientLogoCard key={`logo-${i}`} logo={c} />
             ))}

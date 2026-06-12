@@ -117,7 +117,8 @@ const ar = {
 
   // Clients
   "clients.label": "عملاؤنا",
-  "clients.h2": "يثقون بنا",
+  "clients.h2": "عملاؤنا",
+  "clients.sub": "نفتخر بثقة شركائنا وعملائنا",
 
   // Contact
   "contact.label": "تواصل معنا",
@@ -279,7 +280,8 @@ const en: typeof ar = {
 
   // Clients
   "clients.label": "Our Clients",
-  "clients.h2": "Trusted By",
+  "clients.h2": "Our Clients",
+  "clients.sub": "Trusted by organizations across different sectors",
 
   // Contact
   "contact.label": "Get in Touch",
