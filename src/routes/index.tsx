@@ -3,9 +3,11 @@ import dohaImg from "@/assets/nsmo-doha.jpg";
 import saduImg from "@/assets/sadu-pattern.png";
 import {
   Target, Users, ShieldCheck, Building2, Briefcase, Award, BadgeCheck,
-  LineChart, ClipboardList, ArrowLeft, MapPin, Mail, Phone,
+  LineChart, ClipboardList, ArrowLeft, ArrowRight, MapPin, Mail, Phone,
   GraduationCap, Scale, Network,
 } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
+import type { Lang } from "@/lib/i18n";
 
 const clientLogoModules = import.meta.glob("@/assets/clients/*.asset.json", { eager: true }) as Record<string, { default: { url: string } }>;
 
@@ -66,13 +68,35 @@ type ClientLogo = { url: string; name: string; site?: string };
 const CLIENT_LOGOS: ClientLogo[] = Object.entries(clientLogoModules)
   .map(([path, m]) => {
     const n = parseInt(path.match(/logo(\d+)/)?.[1] ?? "0", 10);
-    const meta = CLIENT_META[n] ?? { name: "عميل" };
+    const meta = CLIENT_META[n] ?? { name: "—" };
     return { url: m.default.url, name: meta.name, site: meta.site, _n: n };
   })
   .sort((a, b) => a._n - b._n)
   .map(({ url, name, site }) => ({ url, name, site }));
 
+const SERVICE_ICONS = [
+  Target, ClipboardList, LineChart, ShieldCheck,
+  Building2, Users, Award, Briefcase,
+  GraduationCap, Network, Scale, BadgeCheck,
+];
 
+const ADVISORS = [
+  { name: "د. منى النعيمي", code: "qa" },
+  { name: "د. علي الإبراهيم", code: "qa" },
+  { name: "الأستاذ/ حسين أمان العلي", code: "qa" },
+  { name: "الأستاذ إبراهيم السادة", code: "qa" },
+  { name: "د. ثمر البقمي", code: "sa" },
+  { name: "السيد إقبال خان", code: "pk" },
+  { name: "د. ألكسندر فان دي بوتي", code: "pl" },
+  { name: "د. أحمد البربري", code: "eg" },
+  { name: "د. ماجد السقا", code: "eg" },
+  { name: "د. إسلام فرج", code: "eg" },
+  { name: "د. أحمد بيومي", code: "eg" },
+  { name: "الأستاذ محمد السيد خليل", code: "eg" },
+  { name: "د. علي قاسم جواد", code: "sy" },
+  { name: "د. أحمد حسونة", code: "jo" },
+  { name: "د. معين الباطينة", code: "jo" },
+];
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -83,50 +107,6 @@ export const Route = createFileRoute("/")({
   }),
   component: HomePage,
 });
-
-const SERVICES = [
-  { icon: Target, title: "التخطيط الاستراتيجي", desc: "صياغة رؤى وخطط استراتيجية مرتبطة برؤية قطر الوطنية 2030، مع سجل افتراضات ومخاطر." },
-  { icon: ClipboardList, title: "الخطط التشغيلية السنوية", desc: "تحويل الاستراتيجية إلى خطط تشغيلية واضحة، بجداول زمنية ومصفوفة أولويات." },
-  { icon: LineChart, title: "خارطة المبادرات التنفيذية", desc: "ربط المبادرات بالنتائج المستهدفة عبر مصفوفة اعتمادية وجدول زمني مرحلي." },
-  { icon: ShieldCheck, title: "إدارة المخاطر والامتثال", desc: "إطار شامل لإدارة المخاطر يواكب أعلى المخاطر وفق المنتدى الاقتصادي العالمي." },
-  { icon: Building2, title: "إعادة الهيكلة التنظيمية", desc: "تصميم هياكل تنظيمية مرنة تدعم الكفاءة وتسريع اتخاذ القرار." },
-  { icon: Users, title: "الموارد البشرية الاستراتيجية", desc: "بناء منظومة موارد بشرية تربط الكفاءات بالأهداف وتُمكّن من تحقيق التميز." },
-  { icon: Award, title: "التميز المؤسسي والجودة", desc: "أنظمة جودة ومعايير تميز تُرسّخ ثقافة الأداء العالي والتحسين المستمر." },
-  { icon: Briefcase, title: "إدارة المشاريع — PMO", desc: "حوكمة ومتابعة فعّالة تُحوّل الاستراتيجية إلى نتائج ملموسة." },
-  { icon: GraduationCap, title: "الكوتشنج القيادي", desc: "تطوير قدرات القيادات التنفيذية من خلال جلسات فردية وجماعية تركّز على اتخاذ القرار والأثر المؤسسي." },
-  { icon: Network, title: "الكوتشنج المؤسسي", desc: "بناء ثقافة التعلم المستمر داخل الفرق وتفعيل آليات التطوير المهني المبني على الكفايات." },
-  { icon: Scale, title: "الحوكمة والالتزام", desc: "تصميم أطر حوكمة شاملة تضمن الشفافية، الفصل بين السلطات، والالتزام بأعلى معايير الممارسات." },
-  { icon: BadgeCheck, title: "شهادة التميز المؤسسي EFQM", desc: "إعداد المؤسسات لنيل شهادة التميز المؤسسي وفق منهجية EFQM العالمية، مع تقييم الجاهزية وبناء خطة تحسين مؤسسي." },
-];
-
-const ADVISORS = [
-  { name: "د. منى النعيمي", country: "قطر", code: "qa" },
-  { name: "د. علي الإبراهيم", country: "قطر", code: "qa" },
-  { name: "الأستاذ/ حسين أمان العلي", country: "قطر", code: "qa" },
-  { name: "الأستاذ إبراهيم السادة", country: "قطر", code: "qa" },
-  { name: "د. ثمر البقمي", country: "السعودية", code: "sa" },
-  { name: "السيد إقبال خان", country: "باكستان", code: "pk" },
-  { name: "د. ألكسندر فان دي بوتي", country: "بولندا", code: "pl" },
-  { name: "د. أحمد البربري", country: "مصر", code: "eg" },
-  { name: "د. ماجد السقا", country: "مصر", code: "eg" },
-  { name: "د. إسلام فرج", country: "مصر", code: "eg" },
-  { name: "د. أحمد بيومي", country: "مصر", code: "eg" },
-  { name: "الأستاذ محمد السيد خليل", country: "مصر", code: "eg" },
-  { name: "د. علي قاسم جواد", country: "سوريا", code: "sy" },
-  { name: "د. أحمد حسونة", country: "الأردن", code: "jo" },
-  { name: "د. معين الباطينة", country: "الأردن", code: "jo" },
-];
-
-const CLIENTS = [
-  { name: "بنك قطر الوطني QNB", initial: "QNB" },
-  { name: "وزارة الصحة العامة", initial: "صح" },
-  { name: "تكامل للأعمال", initial: "تك" },
-  { name: "اللجنة الوطنية لحقوق الإنسان", initial: "حق" },
-  { name: "مؤسسة قطر", initial: "قط" },
-  { name: "وزارة التجارة والصناعة", initial: "تج" },
-  { name: "هيئات حكومية", initial: "حك" },
-  { name: "شركات قطاع خاص", initial: "خاص" },
-];
 
 /** Qatar flag inspired serrated maroon band */
 function QatarBand({ className = "" }: { className?: string }) {
@@ -165,47 +145,96 @@ function ClientLogoCard({ logo }: { logo: ClientLogo }) {
   return <div className={cardClass} title={logo.name} aria-label={logo.name}>{img}</div>;
 }
 
+/** Arrow that points forward in the current layout direction */
+function FwdArrow({ className }: { className?: string }) {
+  const { lang } = useTranslation();
+  return lang === "ar"
+    ? <ArrowLeft className={className} />
+    : <ArrowRight className={className} />;
+}
+
+/** Language switcher pill */
+function LangSwitcher() {
+  const { lang, setLang } = useTranslation();
+  const btn = (l: Lang, label: string) => (
+    <button
+      key={l}
+      onClick={() => setLang(l)}
+      className={`px-2.5 py-1 text-xs font-semibold transition-colors ${
+        lang === l
+          ? "bg-[var(--maroon)] text-white"
+          : "text-muted-foreground hover:text-foreground"
+      }`}
+      aria-current={lang === l ? "true" : undefined}
+    >
+      {label}
+    </button>
+  );
+  return (
+    <div className="flex items-center border border-border rounded-sm overflow-hidden shrink-0">
+      {btn("ar", "عربي")}
+      {btn("en", "EN")}
+    </div>
+  );
+}
+
 function Nav() {
+  const { t } = useTranslation();
   return (
     <nav className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b-2 border-[var(--maroon)]">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3">
+      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-6">
+        <Link to="/" className="flex items-center shrink-0">
           <img src="/images/logos/nsmo-logo.png" alt="NSMO Logo" className="h-10 w-auto md:w-44 md:h-auto" />
         </Link>
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium">
-          <a href="#why" className="hover:text-[var(--maroon)] transition-colors">لماذا نسمو</a>
-          <a href="#services" className="hover:text-[var(--maroon)] transition-colors">الخدمات</a>
-          <a href="#approach" className="hover:text-[var(--maroon)] transition-colors">منهجيتنا</a>
-          <a href="#advisors" className="hover:text-[var(--maroon)] transition-colors">المستشارون</a>
-          <a href="#clients" className="hover:text-[var(--maroon)] transition-colors">العملاء</a>
+        <div className="hidden md:flex items-center gap-7 text-sm font-medium">
+          <a href="#why" className="hover:text-[var(--maroon)] transition-colors whitespace-nowrap">{t("nav.why")}</a>
+          <a href="#services" className="hover:text-[var(--maroon)] transition-colors whitespace-nowrap">{t("nav.services")}</a>
+          <a href="#approach" className="hover:text-[var(--maroon)] transition-colors whitespace-nowrap">{t("nav.approach")}</a>
+          <a href="#advisors" className="hover:text-[var(--maroon)] transition-colors whitespace-nowrap">{t("nav.advisors")}</a>
+          <a href="#clients" className="hover:text-[var(--maroon)] transition-colors whitespace-nowrap">{t("nav.clients")}</a>
         </div>
-        <a href="#contact" className="hidden sm:inline-flex items-center gap-2 bg-[var(--maroon)] text-white px-5 py-2.5 text-sm font-medium hover:bg-[var(--maroon-deep)] transition-colors">
-          احجز جلسة تشخيص
-          <ArrowLeft className="w-4 h-4" />
-        </a>
+        <div className="flex items-center gap-3 shrink-0">
+          <LangSwitcher />
+          <a href="#contact" className="hidden sm:inline-flex items-center gap-2 bg-[var(--maroon)] text-white px-5 py-2.5 text-sm font-medium hover:bg-[var(--maroon-deep)] transition-colors whitespace-nowrap">
+            {t("nav.cta")}
+            <FwdArrow className="w-4 h-4" />
+          </a>
+        </div>
       </div>
     </nav>
   );
 }
 
 function HomePage() {
+  const { t } = useTranslation();
+
+  const PILLARS = [
+    { t: t("pillar.1.t"), d: t("pillar.1.d") },
+    { t: t("pillar.2.t"), d: t("pillar.2.d") },
+    { t: t("pillar.3.t"), d: t("pillar.3.d") },
+  ];
+
+  const STEPS = [0, 1, 2, 3].map((i) => ({
+    n: t(`step.${i}.n` as Parameters<typeof t>[0]),
+    title: t(`step.${i}.t` as Parameters<typeof t>[0]),
+    desc: t(`step.${i}.d` as Parameters<typeof t>[0]),
+  }));
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Nav />
 
       {/* HERO */}
       <section className="relative overflow-hidden isolate">
-        {/* Doha skyline background */}
         <div className="absolute inset-0 z-0">
           <img
             src={dohaImg}
-            alt="أفق الدوحة عند الغروب"
+            alt={t("hero.img_alt")}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-l from-[var(--maroon)]/95 via-[var(--maroon)]/80 to-[var(--maroon)]/40" />
         </div>
 
-        {/* Sadu pattern strip at top */}
         <div
           className="absolute top-0 inset-x-0 h-8 z-10 opacity-90"
           style={{ backgroundImage: `url(${saduImg})`, backgroundSize: "auto 100%", backgroundRepeat: "repeat-x" }}
@@ -213,47 +242,40 @@ function HomePage() {
         />
 
         <div className="max-w-7xl mx-auto px-6 pt-32 pb-32 md:pt-40 md:pb-44 relative z-10">
-
           <div className="max-w-3xl text-white animate-fade-up-blur">
             <div className="inline-flex items-center gap-3 text-[11px] tracking-[0.3em] font-semibold text-[var(--gold-light)]">
               <span className="w-10 h-px bg-[var(--gold-light)]" />
-              
               <span className="w-10 h-px bg-[var(--gold-light)]" />
             </div>
             <h1 className="mt-8 text-4xl md:text-7xl leading-[1.1] font-bold">
-              نُحوِّل الاستراتيجية
+              {t("hero.h1")}
               <br />
-              <span className="text-[var(--gold-light)]">إلى نتائج ملموسة.</span>
+              <span className="text-[var(--gold-light)]">{t("hero.h1_highlight")}</span>
             </h1>
             <p className="mt-8 text-lg md:text-xl text-white/85 leading-[2] max-w-2xl">
-              شريك مؤسسي قطري يبني منظومة تنفيذ تربط الخطة بالواقع،
-              ويُمكّن المؤسسات الحكومية والخاصة من تحقيق
-              <span className="text-[var(--gold-light)] font-semibold"> رؤية قطر الوطنية 2030</span>.
+              {t("hero.sub_pre")}
+              {" "}
+              <span className="text-[var(--gold-light)] font-semibold">{t("hero.sub_highlight")}</span>.
             </p>
             <div className="mt-12 flex flex-wrap gap-4">
               <a href="#contact" className="inline-flex items-center gap-2 bg-white text-[var(--maroon)] px-8 py-4 text-sm font-bold hover:bg-[var(--gold-light)] transition-colors">
-                ابدأ رحلة التحول
-                <ArrowLeft className="w-4 h-4" />
+                {t("hero.cta1")}
+                <FwdArrow className="w-4 h-4" />
               </a>
               <a href="#services" className="inline-flex items-center gap-2 border-2 border-white text-white px-8 py-4 text-sm font-bold hover:bg-white hover:text-[var(--maroon)] transition-colors">
-                استكشف خدماتنا
+                {t("hero.cta2")}
               </a>
             </div>
           </div>
         </div>
 
-        {/* Qatar flag serrated bottom edge */}
         <QatarBand />
       </section>
 
       {/* PILLARS / VALUES */}
       <section className="bg-[var(--cream)] border-b border-border">
         <div className="max-w-7xl mx-auto px-6 py-16 grid md:grid-cols-3 gap-8">
-          {[
-            { t: "الأصالة القطرية", d: "نتجذّر في القيم القطرية الأصيلة ونستلهم من الإرث الحضاري للأمة." },
-            { t: "الانتماء الوطني", d: "كل مشروع نخدم به مؤسسة قطرية هو خدمة للوطن ولرؤيته الطموحة." },
-            { t: "التميز العالمي", d: "نجمع بين المعرفة الدولية والفهم العميق لخصوصية البيئة الخليجية." },
-          ].map((p) => (
+          {PILLARS.map((p) => (
             <div key={p.t} className="flex gap-4 items-start">
               <div className="w-12 h-12 shrink-0 bg-[var(--maroon)] grid place-items-center text-white font-display font-bold">۞</div>
               <div>
@@ -274,37 +296,30 @@ function HomePage() {
         />
         <div className="max-w-7xl mx-auto px-6">
           <div className="max-w-3xl">
-            <p className="text-[11px] tracking-[0.3em] uppercase text-[var(--maroon)] font-bold">لماذا الآن؟</p>
+            <p className="text-[11px] tracking-[0.3em] uppercase text-[var(--maroon)] font-bold">{t("why.label")}</p>
             <h2 className="mt-4 text-3xl md:text-5xl font-bold maroon-rule">
-              عندما تزيد الضبابية الاستراتيجية،<br />الأداء يتراجع.
+              {t("why.h2_1")}<br />{t("why.h2_2")}
             </h2>
             <p className="mt-8 text-muted-foreground leading-[2] text-lg">
-              رصدت Gartner ظاهرة "الاختلال الاستراتيجي" وارتباطها بانخفاض احتمالية الأداء القوي.
-              هذه ليست أرقامًا للتخويف — إنها تكلفة غياب منظومة تنفيذ تربط الخطة بالواقع.
+              {t("why.body")}
             </p>
           </div>
 
           <div className="mt-16 grid md:grid-cols-3 gap-px bg-[var(--maroon)]">
             <div className="bg-background p-10">
-              <div className="text-5xl md:text-6xl font-display font-bold text-[var(--maroon)]">10–30٪</div>
-              <h3 className="mt-4 text-lg font-bold">فجوة التنفيذ</h3>
-              <p className="mt-3 text-sm text-muted-foreground leading-[1.9]">
-                ما يتحقق فعليًا من المقصود في غياب منظومة تنفيذ حقيقية.
-              </p>
+              <div className="text-5xl md:text-6xl font-display font-bold text-[var(--maroon)]">{t("why.stat1.val")}</div>
+              <h3 className="mt-4 text-lg font-bold">{t("why.stat1.t")}</h3>
+              <p className="mt-3 text-sm text-muted-foreground leading-[1.9]">{t("why.stat1.d")}</p>
             </div>
             <div className="bg-background p-10">
-              <div className="text-5xl md:text-6xl font-display font-bold text-[var(--maroon)]">11.4٪</div>
-              <h3 className="mt-4 text-lg font-bold">تكلفة الهدر</h3>
-              <p className="mt-3 text-sm text-muted-foreground leading-[1.9]">
-                من الاستثمار يضيع بسبب ضعف أداء المشاريع وفق دراسات PMI.
-              </p>
+              <div className="text-5xl md:text-6xl font-display font-bold text-[var(--maroon)]">{t("why.stat2.val")}</div>
+              <h3 className="mt-4 text-lg font-bold">{t("why.stat2.t")}</h3>
+              <p className="mt-3 text-sm text-muted-foreground leading-[1.9]">{t("why.stat2.d")}</p>
             </div>
             <div className="bg-[var(--maroon)] text-white p-10">
-              <div className="text-5xl md:text-6xl font-display font-bold text-[var(--gold-light)]">2030</div>
-              <h3 className="mt-4 text-lg font-bold">رؤية قطر الوطنية</h3>
-              <p className="mt-3 text-sm text-white/80 leading-[1.9]">
-                مواءمة استراتيجياتك مع الركائز الأربع: البشرية، الاجتماعية، الاقتصادية، والبيئية.
-              </p>
+              <div className="text-5xl md:text-6xl font-display font-bold text-[var(--gold-light)]">{t("why.stat3.val")}</div>
+              <h3 className="mt-4 text-lg font-bold">{t("why.stat3.t")}</h3>
+              <p className="mt-3 text-sm text-white/80 leading-[1.9]">{t("why.stat3.d")}</p>
             </div>
           </div>
         </div>
@@ -314,24 +329,24 @@ function HomePage() {
       <section id="services" className="max-w-7xl mx-auto px-6 py-24 md:py-32">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
           <div className="max-w-2xl">
-            <p className="text-[11px] tracking-[0.3em] uppercase text-[var(--maroon)] font-bold">خدماتنا</p>
-            <h2 className="mt-4 text-3xl md:text-5xl font-bold maroon-rule">
-              منظومة استشارية متكاملة.
-            </h2>
+            <p className="text-[11px] tracking-[0.3em] uppercase text-[var(--maroon)] font-bold">{t("services.label")}</p>
+            <h2 className="mt-4 text-3xl md:text-5xl font-bold maroon-rule">{t("services.h2")}</h2>
           </div>
-          <p className="text-muted-foreground max-w-md leading-[2]">
-            من التخطيط الاستراتيجي حتى التنفيذ المؤسسي — حلول مصمَّمة للبيئة القطرية، بأثر قابل للقياس.
-          </p>
+          <p className="text-muted-foreground max-w-md leading-[2]">{t("services.sub")}</p>
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border">
-          {SERVICES.map(({ icon: Icon, title, desc }) => (
-            <div key={title} className="bg-background p-8 hover:bg-[var(--cream)] transition-colors group border-b-2 border-transparent hover:border-[var(--maroon)]">
+          {SERVICE_ICONS.map((Icon, i) => (
+            <div key={i} className="bg-background p-8 hover:bg-[var(--cream)] transition-colors group border-b-2 border-transparent hover:border-[var(--maroon)]">
               <div className="w-12 h-12 bg-[var(--cream)] grid place-items-center text-[var(--maroon)] group-hover:bg-[var(--maroon)] group-hover:text-white transition-colors">
                 <Icon className="w-5 h-5" strokeWidth={1.5} />
               </div>
-              <h3 className="mt-6 text-lg font-bold font-display">{title}</h3>
-              <p className="mt-3 text-sm text-muted-foreground leading-[1.9]">{desc}</p>
+              <h3 className="mt-6 text-lg font-bold font-display">
+                {t(`service.${i}.t` as Parameters<typeof t>[0])}
+              </h3>
+              <p className="mt-3 text-sm text-muted-foreground leading-[1.9]">
+                {t(`service.${i}.d` as Parameters<typeof t>[0])}
+              </p>
             </div>
           ))}
         </div>
@@ -340,35 +355,27 @@ function HomePage() {
       {/* APPROACH */}
       <section id="approach" className="relative bg-[var(--maroon)] text-white py-24 md:py-32 overflow-hidden">
         <div
-          className="absolute inset-y-0 left-0 w-64 opacity-15"
+          className="absolute inset-y-0 start-0 w-64 opacity-15"
           style={{ backgroundImage: `url(${saduImg})`, backgroundSize: "200% auto", backgroundRepeat: "repeat-y" }}
           aria-hidden
         />
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 relative">
           <div>
-            <p className="text-[11px] tracking-[0.3em] uppercase text-[var(--gold-light)] font-bold">منهجيتنا</p>
+            <p className="text-[11px] tracking-[0.3em] uppercase text-[var(--gold-light)] font-bold">{t("approach.label")}</p>
             <h2 className="mt-4 text-3xl md:text-5xl font-bold">
-              تشخيص دقيق.
+              {t("approach.h2")}
               <br />
-              <span className="text-[var(--gold-light)]">تنفيذ منضبط.</span>
+              <span className="text-[var(--gold-light)]">{t("approach.h2_highlight")}</span>
             </h2>
-            <p className="mt-8 text-white/80 leading-[2] text-lg max-w-md">
-              نُقدِّم مخرجات استشارية متوافقة مع التدقيق والحوكمة والجهات الرقابية،
-              بدءًا من السياسات والأطر التنظيمية حتى لوحات القياس التنفيذية.
-            </p>
+            <p className="mt-8 text-white/80 leading-[2] text-lg max-w-md">{t("approach.body")}</p>
           </div>
           <div className="space-y-6">
-            {[
-              { n: "٠١", t: "التشخيص المؤسسي", d: "تقييم مستوى النضج، تحليل الفجوات، وقياس الأداء بمؤشرات كمية ونوعية." },
-              { n: "٠٢", t: "صياغة الحلول", d: "تصميم خطط واقعية وقابلة للتنفيذ، مع سيناريوهات وافتراضات موثَّقة." },
-              { n: "٠٣", t: "التنفيذ والمتابعة", d: "بناء PMO وحوكمة، مع لوحات قياس تكشف الانحرافات مبكرًا." },
-              { n: "٠٤", t: "الأثر المستدام", d: "ترسيخ القدرات داخل المؤسسة لضمان استمرار التحسين بعد انتهاء التدخل." },
-            ].map(({ n, t, d }) => (
+            {STEPS.map(({ n, title, desc }) => (
               <div key={n} className="flex gap-6 border-t border-white/20 pt-6">
                 <div className="text-[var(--gold-light)] font-display font-bold text-2xl shrink-0 w-12">{n}</div>
                 <div>
-                  <h3 className="font-bold text-lg">{t}</h3>
-                  <p className="mt-2 text-sm text-white/70 leading-[1.9]">{d}</p>
+                  <h3 className="font-bold text-lg">{title}</h3>
+                  <p className="mt-2 text-sm text-white/70 leading-[1.9]">{desc}</p>
                 </div>
               </div>
             ))}
@@ -379,13 +386,9 @@ function HomePage() {
       {/* ADVISORS */}
       <section id="advisors" className="max-w-7xl mx-auto px-6 py-24 md:py-32">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <p className="text-[11px] tracking-[0.3em] uppercase text-[var(--maroon)] font-bold">مستشارونا</p>
-          <h2 className="mt-4 text-3xl md:text-5xl font-bold maroon-rule center mx-auto">
-            خبرات عالمية. أثر قطري.
-          </h2>
-          <p className="mt-8 text-muted-foreground leading-[2]">
-            شبكة من المستشارين والشركاء الدوليين من أعرق المؤسسات الأكاديمية والاستشارية.
-          </p>
+          <p className="text-[11px] tracking-[0.3em] uppercase text-[var(--maroon)] font-bold">{t("advisors.label")}</p>
+          <h2 className="mt-4 text-3xl md:text-5xl font-bold maroon-rule center mx-auto">{t("advisors.h2")}</h2>
+          <p className="mt-8 text-muted-foreground leading-[2]">{t("advisors.body")}</p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {ADVISORS.map((a) => (
@@ -394,18 +397,20 @@ function HomePage() {
                 <img
                   src={`https://flagcdn.com/w80/${a.code}.png`}
                   srcSet={`https://flagcdn.com/w160/${a.code}.png 2x`}
-                  alt={a.country}
+                  alt={t(`country.${a.code}` as Parameters<typeof t>[0])}
                   loading="lazy"
                   className="w-full h-full object-cover"
                 />
               </div>
               <h3 className="mt-5 font-bold font-display text-lg">{a.name}</h3>
-              <p className="text-xs text-[var(--maroon)] mt-3 tracking-[0.2em] font-semibold">{a.country}</p>
+              <p className="text-xs text-[var(--maroon)] mt-3 tracking-[0.2em] font-semibold">
+                {t(`country.${a.code}` as Parameters<typeof t>[0])}
+              </p>
             </div>
           ))}
         </div>
         <p className="mt-12 text-center text-sm text-muted-foreground whitespace-pre-line">
-          بالشراكة مع{"\n"}
+          {t("advisors.partners")}{"\n"}
           <span className="text-foreground font-bold">INSEAD · McKinsey · Accenture · Dale Carnegie · IE Business School</span>
         </p>
       </section>
@@ -414,8 +419,8 @@ function HomePage() {
       <section id="clients" className="relative bg-[var(--cream)] py-20 md:py-24 border-y border-border">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <p className="text-[11px] tracking-[0.3em] uppercase text-[var(--maroon)] font-bold">عملاؤنا</p>
-            <h2 className="mt-4 text-2xl md:text-4xl font-bold">يثقون بنا</h2>
+            <p className="text-[11px] tracking-[0.3em] uppercase text-[var(--maroon)] font-bold">{t("clients.label")}</p>
+            <h2 className="mt-4 text-2xl md:text-4xl font-bold">{t("clients.h2")}</h2>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
@@ -426,26 +431,22 @@ function HomePage() {
         </div>
       </section>
 
-
       {/* CTA / CONTACT */}
       <section id="contact" className="max-w-7xl mx-auto px-6 py-24 md:py-32">
         <div className="grid md:grid-cols-2 gap-16 items-start">
           <div>
-            <p className="text-[11px] tracking-[0.3em] uppercase text-[var(--maroon)] font-bold">تواصل معنا</p>
+            <p className="text-[11px] tracking-[0.3em] uppercase text-[var(--maroon)] font-bold">{t("contact.label")}</p>
             <h2 className="mt-4 text-3xl md:text-5xl font-bold maroon-rule">
-              ابدأ رحلة التحول.
+              {t("contact.h2")}
               <br />
-              احجز جلسة تشخيص.
+              {t("contact.h2_2")}
             </h2>
-            <p className="mt-8 text-muted-foreground leading-[2] text-lg">
-              تواصل مع فريق نسمو لجلسة استكشافية تُحدِّد فيها الفجوات الأهم،
-              وخارطة تدخل سريعة من 6 إلى 10 أسابيع.
-            </p>
+            <p className="mt-8 text-muted-foreground leading-[2] text-lg">{t("contact.body")}</p>
 
             <div className="mt-10 space-y-5 text-sm">
               <div className="flex items-center gap-4">
                 <MapPin className="w-5 h-5 text-[var(--maroon)] shrink-0" />
-                <span>الدوحة — دولة قطر</span>
+                <span>{t("contact.loc")}</span>
               </div>
               <div className="flex items-center gap-4">
                 <Mail className="w-5 h-5 text-[var(--maroon)] shrink-0" />
@@ -459,27 +460,27 @@ function HomePage() {
           </div>
 
           <form
-            onSubmit={(e) => { e.preventDefault(); alert("شكرًا لتواصلك. سيتم الرد عليك خلال يوم عمل."); }}
+            onSubmit={(e) => { e.preventDefault(); alert(t("contact.form.success")); }}
             className="bg-card border-t-4 border-[var(--maroon)] border-x border-b border-border p-8 md:p-10 space-y-5 shadow-sm"
           >
             <div>
-              <label className="text-xs tracking-[0.2em] uppercase text-muted-foreground font-semibold">الاسم الكامل</label>
+              <label className="text-xs tracking-[0.2em] uppercase text-muted-foreground font-semibold">{t("contact.form.name")}</label>
               <input required className="mt-2 w-full bg-transparent border-b-2 border-border focus:border-[var(--maroon)] outline-none py-3 text-sm transition-colors" />
             </div>
             <div>
-              <label className="text-xs tracking-[0.2em] uppercase text-muted-foreground font-semibold">الجهة / المؤسسة</label>
+              <label className="text-xs tracking-[0.2em] uppercase text-muted-foreground font-semibold">{t("contact.form.org")}</label>
               <input required className="mt-2 w-full bg-transparent border-b-2 border-border focus:border-[var(--maroon)] outline-none py-3 text-sm transition-colors" />
             </div>
             <div>
-              <label className="text-xs tracking-[0.2em] uppercase text-muted-foreground font-semibold">البريد الإلكتروني</label>
+              <label className="text-xs tracking-[0.2em] uppercase text-muted-foreground font-semibold">{t("contact.form.email")}</label>
               <input type="email" required className="mt-2 w-full bg-transparent border-b-2 border-border focus:border-[var(--maroon)] outline-none py-3 text-sm transition-colors" />
             </div>
             <div>
-              <label className="text-xs tracking-[0.2em] uppercase text-muted-foreground font-semibold">رسالتك</label>
+              <label className="text-xs tracking-[0.2em] uppercase text-muted-foreground font-semibold">{t("contact.form.msg")}</label>
               <textarea rows={4} required className="mt-2 w-full bg-transparent border-b-2 border-border focus:border-[var(--maroon)] outline-none py-3 text-sm transition-colors resize-none" />
             </div>
             <button type="submit" className="w-full bg-[var(--maroon)] text-white py-4 text-sm font-bold hover:bg-[var(--maroon-deep)] transition-colors">
-              إرسال الطلب
+              {t("contact.form.submit")}
             </button>
           </form>
         </div>
@@ -493,23 +494,21 @@ function HomePage() {
             <div className="flex items-center gap-3 bg-white px-3 py-2 rounded-sm inline-flex">
               <img src="/images/logos/nsmo-logo.png" alt="NSMO Logo" className="h-12 w-auto" />
             </div>
-            <p className="mt-5 text-sm leading-[1.9] text-white/65">
-              شريك مؤسسي قطري متخصص في تحويل الاستراتيجية إلى نتائج، انسجامًا مع رؤية قطر الوطنية 2030.
-            </p>
+            <p className="mt-5 text-sm leading-[1.9] text-white/65">{t("footer.tagline")}</p>
           </div>
           <div>
-            <div className="text-[10px] tracking-[0.3em] text-[var(--gold-light)] font-bold mb-4">روابط</div>
+            <div className="text-[10px] tracking-[0.3em] text-[var(--gold-light)] font-bold mb-4">{t("footer.links")}</div>
             <ul className="space-y-2 text-sm">
-              <li><a href="#services" className="hover:text-[var(--gold-light)]">الخدمات</a></li>
-              <li><a href="#approach" className="hover:text-[var(--gold-light)]">منهجيتنا</a></li>
-              <li><a href="#advisors" className="hover:text-[var(--gold-light)]">المستشارون</a></li>
-              <li><a href="#contact" className="hover:text-[var(--gold-light)]">تواصل معنا</a></li>
+              <li><a href="#services" className="hover:text-[var(--gold-light)]">{t("nav.services")}</a></li>
+              <li><a href="#approach" className="hover:text-[var(--gold-light)]">{t("nav.approach")}</a></li>
+              <li><a href="#advisors" className="hover:text-[var(--gold-light)]">{t("nav.advisors")}</a></li>
+              <li><a href="#contact" className="hover:text-[var(--gold-light)]">{t("contact.label")}</a></li>
             </ul>
           </div>
           <div>
-            <div className="text-[10px] tracking-[0.3em] text-[var(--gold-light)] font-bold mb-4">العنوان</div>
+            <div className="text-[10px] tracking-[0.3em] text-[var(--gold-light)] font-bold mb-4">{t("footer.address")}</div>
             <p className="text-sm leading-[1.9] text-white/65">
-              الدوحة — دولة قطر<br />
+              {t("footer.addr_text")}<br />
               info@nsmo.qa<br />
               <span dir="ltr">+974 70960678</span>
             </p>
@@ -528,8 +527,8 @@ function HomePage() {
         </div>
         <div className="border-t border-white/10">
           <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between text-xs text-white/50">
-            <span>© {new Date().getFullYear()} مركز نسمو للاستشارات الإدارية — جميع الحقوق محفوظة</span>
-            <span className="tracking-[0.25em]">صُمِّم في الدوحة 🇶🇦</span>
+            <span>{t("footer.copyright")}</span>
+            <span className="tracking-[0.25em]">{t("footer.crafted")}</span>
           </div>
         </div>
       </footer>
