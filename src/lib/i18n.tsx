@@ -119,6 +119,9 @@ const ar = {
   "clients.label": "عملاؤنا",
   "clients.h2": "عملاؤنا",
   "clients.sub": "نفتخر بثقة شركائنا وعملائنا",
+  "clients.group.qatar": "عملاء قطر",
+  "clients.group.saudi": "عملاء السعودية",
+  "clients.group.regional": "عملاء إقليميون ودوليون",
 
   // Contact
   "contact.label": "تواصل معنا",
@@ -282,6 +285,9 @@ const en: typeof ar = {
   "clients.label": "Our Clients",
   "clients.h2": "Our Clients",
   "clients.sub": "Trusted by organizations across different sectors",
+  "clients.group.qatar": "Qatar Clients",
+  "clients.group.saudi": "Saudi Clients",
+  "clients.group.regional": "Regional & International Clients",
 
   // Contact
   "contact.label": "Get in Touch",
