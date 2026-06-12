@@ -1,5 +1,6 @@
 import { Outlet, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { Toaster } from "@/components/ui/sonner";
+import { LanguageProvider } from "@/lib/i18n";
 
 import appCss from "../styles.css?url";
 
@@ -34,6 +35,8 @@ function RootShell({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ar" dir="rtl">
       <head>
+        {/* Prevent RTL→LTR flash for users who chose English */}
+        <script dangerouslySetInnerHTML={{ __html: `try{var l=localStorage.getItem('nsmo-lang');if(l==='en'){document.documentElement.lang='en';document.documentElement.dir='ltr'}}catch(e){}` }} />
         <HeadContent />
       </head>
       <body>
@@ -46,11 +49,11 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   return (
-    <>
+    <LanguageProvider>
       <div className="animate-page-enter">
         <Outlet />
       </div>
       <Toaster position="top-center" />
-    </>
+    </LanguageProvider>
   );
 }

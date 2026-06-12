@@ -13,6 +13,7 @@ import { AddHabitSheet } from "@/components/AddHabitSheet";
 import { EditHabitSheet } from "@/components/EditHabitSheet";
 import { OnboardingFlow, isOnboarded } from "@/components/OnboardingFlow";
 import { Leaf, Sparkles, ChevronDown, Pencil, Check } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
 import { toast } from "sonner";
 import { rescheduleAllReminders, scheduleReminder } from "@/lib/notifications";
 import { useAuth } from "@/hooks/use-auth";
@@ -235,6 +236,8 @@ function TodayPage() {
   const completedCount = scheduledToday.filter((h) => isCompletedToday(h.id, logs)).length;
   const allDone = scheduledToday.length > 0 && completedCount === scheduledToday.length;
 
+  const { t, lang } = useTranslation();
+
   if (!mounted || authLoading) return null;
 
   if (showOnboarding) {
@@ -242,16 +245,16 @@ function TodayPage() {
   }
 
   const now = new Date();
-  const greeting = now.getHours() < 12 ? "Good morning" : now.getHours() < 17 ? "Good afternoon" : "Good evening";
-  const dateStr = now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
+  const greeting = now.getHours() < 12 ? t("app.morning") : now.getHours() < 17 ? t("app.afternoon") : t("app.evening");
+  const dateStr = now.toLocaleDateString(lang === "ar" ? "ar-QA" : "en-US", { weekday: "long", month: "long", day: "numeric" });
 
   const subtitle = scheduledToday.length === 0 && habits.length > 0
-    ? "Nothing scheduled today"
+    ? t("app.nothing_scheduled")
     : scheduledToday.length === 0
       ? ""
       : allDone
-        ? "All done for today ✨"
-        : `${completedCount} of ${scheduledToday.length} done`;
+        ? t("app.all_done")
+        : t("app.progress", { x: completedCount, y: scheduledToday.length });
 
   return (
     <div className="min-h-screen pb-28 relative">
@@ -263,11 +266,11 @@ function TodayPage() {
             <h1 className="text-2xl font-semibold text-foreground mt-0.5 tracking-tight" style={{ lineHeight: "1.2" }}>
               {allDone ? (
                 <span className="flex items-center gap-2">
-                  Perfect day
+                  {t("app.perfect_day")}
                   <Sparkles className="w-5 h-5 text-primary" />
                 </span>
               ) : (
-                "Your daily ritual"
+                t("app.daily_ritual")
               )}
             </h1>
             {subtitle && <p className="text-sm text-muted-foreground mt-1">{dateStr} · {subtitle}</p>}
@@ -284,9 +287,9 @@ function TodayPage() {
         {habits.length === 0 ? (
           <div className="border-2 border-dashed border-muted-foreground/20 rounded-2xl py-16 px-6 text-center animate-fade-up-blur mt-6" style={{ animationDelay: "160ms" }}>
             <Leaf className="w-7 h-7 text-muted-foreground/40 mx-auto mb-4" />
-            <p className="text-foreground font-semibold text-lg">A fresh start</p>
+            <p className="text-foreground font-semibold text-lg">{t("app.fresh_start")}</p>
             <p className="text-sm text-muted-foreground mt-1.5 max-w-[240px] mx-auto" style={{ textWrap: "pretty" }}>
-              Tap the + button below to add your first habit
+              {t("app.add_first")}
             </p>
           </div>
         ) : (
@@ -347,7 +350,7 @@ function TodayPage() {
                   className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium mb-2 hover:text-foreground transition-colors"
                 >
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${showNotScheduled ? "rotate-0" : "-rotate-90"}`} />
-                  Not scheduled today ({notScheduledToday.length})
+                  {t("app.not_scheduled", { count: notScheduledToday.length })}
                 </button>
                 {showNotScheduled && (
                   <div className="space-y-2 opacity-60">
@@ -355,7 +358,7 @@ function TodayPage() {
                       <button
                         key={habit.id}
                         onClick={() => setEditHabit(habit)}
-                        className="flex items-center gap-3 rounded-xl bg-card/50 px-4 py-3 w-full text-left hover:bg-card/80 transition-colors"
+                        className="flex items-center gap-3 rounded-xl bg-card/50 px-4 py-3 w-full text-start hover:bg-card/80 transition-colors"
                       >
                         <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: habit.color }} />
                         <div className="flex-1 min-w-0">
