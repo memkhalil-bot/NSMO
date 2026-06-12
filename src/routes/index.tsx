@@ -9,63 +9,66 @@ import {
 import { useTranslation } from "@/lib/i18n";
 import type { Lang } from "@/lib/i18n";
 
-type ClientLogo = { src: string; name: string; site?: string };
+type ClientLogo = {
+  src: string;
+  name: string;
+  url: string | null;
+  country: "qa" | "sa" | "international" | "unknown";
+};
 
-// Ordered: Qatar first, Saudi second, Regional/International last
+// Order: Qatar → Saudi Arabia → International → Unknown (no visible grouping in UI)
 const CLIENT_LOGOS: ClientLogo[] = [
-  // — Qatar —
-  { src: "/images/clients/client-logo-45.png",  name: "الديوان الأميري",                      site: "https://www.diwan.gov.qa" },
-  { src: "/images/clients/client-logo-47.jpeg", name: "بنك قطر الوطني QNB",                  site: "https://www.qnb.com" },
-  { src: "/images/clients/client-logo-29.jpeg", name: "القطرية",                              site: "https://www.qatarairways.com" },
-  { src: "/images/clients/client-logo-30.png",  name: "Ooredoo",                              site: "https://www.ooredoo.qa" },
-  { src: "/images/clients/client-logo-27.png",  name: "كهرماء",                               site: "https://www.km.qa" },
-  { src: "/images/clients/client-logo-15.jpeg", name: "جامعة قطر",                            site: "https://www.qu.edu.qa" },
-  { src: "/images/clients/client-logo-20.jpeg", name: "وزارة الداخلية — قطر",                site: "https://www.moi.gov.qa" },
-  { src: "/images/clients/client-logo-19.png",  name: "وزارة الثقافة — قطر",                 site: "https://www.moc.gov.qa" },
-  { src: "/images/clients/client-logo-24.png",  name: "وزارة التجارة والصناعة — قطر",        site: "https://www.moci.gov.qa" },
-  { src: "/images/clients/client-logo-35.png",  name: "وزارة الصحة العامة — قطر",            site: "https://www.moph.gov.qa" },
-  { src: "/images/clients/client-logo-21.png",  name: "ديوان الخدمة والتطوير الحكومي — قطر", site: "https://www.csb.gov.qa" },
-  { src: "/images/clients/client-logo-22.png",  name: "الهيئة العامة للجمارك — قطر",         site: "https://www.customs.gov.qa" },
-  { src: "/images/clients/client-logo-23.png",  name: "جهاز التخطيط والإحصاء",               site: "https://www.psa.gov.qa" },
-  { src: "/images/clients/client-logo-25.png",  name: "ديوان المحاسبة — قطر",                site: "https://www.sab.gov.qa" },
-  { src: "/images/clients/client-logo-26.jpeg", name: "المجلس الأعلى للقضاء — قطر",          site: "https://www.sjc.gov.qa" },
-  { src: "/images/clients/client-logo-31.jpeg", name: "الهيئة العامة للضرائب — قطر",         site: "https://www.gta.gov.qa" },
-  { src: "/images/clients/client-logo-32.jpeg", name: "قطر تستحق الأفضل",                    site: "https://www.gco.gov.qa" },
-  { src: "/images/clients/client-logo-34.jpeg", name: "اللجنة الوطنية لحقوق الإنسان",        site: "https://www.nhrc-qa.org" },
-  { src: "/images/clients/client-logo-18.png",  name: "الهلال الأحمر القطري",                site: "https://www.qrcs.org.qa" },
-  { src: "/images/clients/client-logo-28.jpeg", name: "وكالة الأنباء القطرية",                site: "https://www.qna.org.qa" },
-  { src: "/images/clients/client-logo-39.jpeg", name: "البنك الأهلي القطري",                 site: "https://www.ahlibank.com.qa" },
-  { src: "/images/clients/client-logo-17.png",  name: "سكتور ستيل الدوحة",                   site: "https://www.sectorsteel.com" },
-  { src: "/images/clients/client-logo-40.png",  name: "سكتور ستيل الدوحة",                   site: "https://www.sectorsteel.com" },
-  { src: "/images/clients/client-logo-12.png",  name: "هناك",                                 site: "https://hunak.qa" },
-  // — Saudi Arabia —
-  { src: "/images/clients/client-logo-07.jpg",  name: "مصرف الراجحي",                          site: "https://www.alrajhibank.com.sa" },
-  { src: "/images/clients/client-logo-02.png",  name: "الأهلي كابيتال",                        site: "https://www.alahlicapital.com" },
-  { src: "/images/clients/client-logo-03.png",  name: "الجزيرة كابيتال",                       site: "https://www.aljaziracapital.com.sa" },
-  { src: "/images/clients/client-logo-08.png",  name: "بنك التنمية الاجتماعية",                site: "https://www.sdb.gov.sa" },
-  { src: "/images/clients/client-logo-04.jpg",  name: "وزارة الصحة — السعودية",                site: "https://www.moh.gov.sa" },
-  { src: "/images/clients/client-logo-05.jpg",  name: "وزارة الموارد البشرية والتنمية الاجتماعية", site: "https://www.hrsd.gov.sa" },
-  { src: "/images/clients/client-logo-09.png",  name: "وزارة الإسكان — السعودية",              site: "https://www.housing.gov.sa" },
-  { src: "/images/clients/client-logo-33.png",  name: "تكامل",                                 site: "https://takamol.com.sa" },
-  { src: "/images/clients/client-logo-37.jpeg", name: "معادن",                                 site: "https://www.maaden.com.sa" },
-  { src: "/images/clients/client-logo-06.jpg",  name: "إكسترا",                                site: "https://www.extra.com" },
-  { src: "/images/clients/client-logo-10.jpg",  name: "دُلني",                                 site: "https://www.dulani.com" },
-  { src: "/images/clients/client-logo-11.png",  name: "لبيه",                                  site: "https://labayh.net" },
-  { src: "/images/clients/client-logo-13.png",  name: "مؤسسة سالم بن محفوظ",                  site: "https://www.sbmfoundation.com" },
-  { src: "/images/clients/client-logo-14.png",  name: "جامعة الحدود الشمالية",                site: "https://www.nbu.edu.sa" },
-  { src: "/images/clients/client-logo-48.png",  name: "جامعة الملك خالد",                     site: "https://www.kku.edu.sa" },
-  { src: "/images/clients/client-logo-49.png",  name: "جامعة الملك سعود",                     site: "https://www.ksu.edu.sa" },
-  { src: "/images/clients/client-logo-50.jpeg", name: "جامعة أم القرى",                       site: "https://www.uqu.edu.sa" },
-  { src: "/images/clients/client-logo-16.png",  name: "مالتي باك",                             site: "https://multipackindustries.com" },
-  // — Regional & International —
-  { src: "/images/clients/client-logo-46.jpeg", name: "حكومة دبي",          site: "https://www.dubai.ae" },
-  { src: "/images/clients/client-logo-41.jpeg", name: "مستشفيات دار الفؤاد", site: "https://www.daralfouad-hospital.com" },
-  { src: "/images/clients/client-logo-42.jpeg", name: "عصفور كريستال",       site: "https://www.asfourcrystal.com" },
-  { src: "/images/clients/client-logo-44.png",  name: "هليوبوليس للتعمير",  site: "https://www.hdg.com.eg" },
-  { src: "/images/clients/client-logo-36.png",  name: "MBCC" },
-  { src: "/images/clients/client-logo-38.png",  name: "Z Corporate" },
-  { src: "/images/clients/client-logo-43.jpeg", name: "Hassob Labs" },
-  { src: "/images/clients/client-logo-01.jpeg", name: "عميل" },
+  // ── Qatar ──────────────────────────────────────────────────────────────
+  { src: "/images/clients/client-logo-31.jpeg", name: "الديوان الأميري",                              url: "https://www.diwan.gov.qa",        country: "qa" },
+  { src: "/images/clients/client-logo-33.png",  name: "بنك قطر الوطني QNB",                          url: "https://www.qnb.com",             country: "qa" },
+  { src: "/images/clients/client-logo-18.png",  name: "جامعة قطر",                                   url: "https://www.qu.edu.qa",           country: "qa" },
+  { src: "/images/clients/client-logo-23.png",  name: "وزارة الداخلية — قطر",                        url: "https://www.moi.gov.qa",          country: "qa" },
+  { src: "/images/clients/client-logo-22.png",  name: "وزارة الثقافة — قطر",                         url: "https://www.moc.gov.qa",          country: "qa" },
+  { src: "/images/clients/client-logo-38.png",  name: "وزارة التجارة والصناعة — قطر",                url: "https://www.moci.gov.qa",         country: "qa" },
+  { src: "/images/clients/client-logo-50.jpeg", name: "وزارة الصحة العامة — قطر",                    url: "https://www.moph.gov.qa",         country: "qa" },
+  { src: "/images/clients/client-logo-24.png",  name: "ديوان الخدمة المدنية والتطوير الحكومي — قطر", url: "https://www.cgb.gov.qa",          country: "qa" },
+  { src: "/images/clients/client-logo-41.jpeg", name: "الهيئة العامة للجمارك — قطر",                 url: "https://www.customs.gov.qa",      country: "qa" },
+  { src: "/images/clients/client-logo-42.jpeg", name: "المجلس الأعلى للقضاء — قطر",                  url: "https://www.sjc.gov.qa",          country: "qa" },
+  { src: "/images/clients/client-logo-39.jpeg", name: "المجلس الوطني للتخطيط — قطر",                url: "https://www.npc.gov.qa",          country: "qa" },
+  { src: "/images/clients/client-logo-37.jpeg", name: "ديوان المحاسبة — قطر",                        url: "https://www.sab.gov.qa",          country: "qa" },
+  { src: "/images/clients/client-logo-46.jpeg", name: "الهيئة العامة للضرائب — قطر",                 url: "https://www.gta.gov.qa",          country: "qa" },
+  { src: "/images/clients/client-logo-43.jpeg", name: "وكالة الأنباء القطرية",                        url: "https://www.qna.org.qa",          country: "qa" },
+  { src: "/images/clients/client-logo-21.png",  name: "الهلال الأحمر القطري",                        url: "https://www.qrcs.org.qa",         country: "qa" },
+  { src: "/images/clients/client-logo-25.png",  name: "البنك الأهلي القطري",                         url: "https://www.ahlibank.com.qa",     country: "qa" },
+  { src: "/images/clients/client-logo-26.jpeg", name: "سكتور ستيل دوحة",                             url: "https://www.sectorsteel.com",     country: "qa" },
+  { src: "/images/clients/client-logo-44.png",  name: "بورصة قطر",                                   url: "https://www.qe.com.qa",           country: "qa" },
+  // ── Saudi Arabia ───────────────────────────────────────────────────────
+  { src: "/images/clients/client-logo-03.png",  name: "جامعة الملك فهد للبترول والمعادن",            url: "https://www.kfupm.edu.sa",        country: "sa" },
+  { src: "/images/clients/client-logo-05.jpg",  name: "الأهلي كابيتال",                              url: "https://www.alahlicapital.com",   country: "sa" },
+  { src: "/images/clients/client-logo-06.jpg",  name: "الجزيرة كابيتال",                             url: "https://www.aljaziracapital.com.sa", country: "sa" },
+  { src: "/images/clients/client-logo-07.jpg",  name: "وزارة الصحة — السعودية",                      url: "https://www.moh.gov.sa",          country: "sa" },
+  { src: "/images/clients/client-logo-08.png",  name: "وزارة العمل والتنمية الاجتماعية — السعودية", url: "https://www.hrsd.gov.sa",         country: "sa" },
+  { src: "/images/clients/client-logo-09.png",  name: "إكسترا",                                      url: "https://www.extra.com",           country: "sa" },
+  { src: "/images/clients/client-logo-10.jpg",  name: "مصرف الراجحي",                                url: "https://www.alrajhibank.com.sa",  country: "sa" },
+  { src: "/images/clients/client-logo-11.png",  name: "بنك التنمية الاجتماعية",                      url: "https://www.sdb.gov.sa",          country: "sa" },
+  { src: "/images/clients/client-logo-12.png",  name: "وزارة الإسكان — السعودية",                    url: "https://www.momah.gov.sa",        country: "sa" },
+  { src: "/images/clients/client-logo-14.png",  name: "لبيه",                                        url: "https://labayh.net",              country: "sa" },
+  { src: "/images/clients/client-logo-16.png",  name: "مؤسسة سالم بن محفوظ الخيرية",                url: "https://www.sbmf.org.sa",         country: "sa" },
+  { src: "/images/clients/client-logo-17.png",  name: "جامعة الحدود الشمالية",                       url: "https://www.nbu.edu.sa",          country: "sa" },
+  { src: "/images/clients/client-logo-34.jpeg", name: "جامعة الملك خالد",                            url: "https://www.kku.edu.sa",          country: "sa" },
+  { src: "/images/clients/client-logo-35.png",  name: "جامعة الملك سعود",                            url: "https://www.ksu.edu.sa",          country: "sa" },
+  { src: "/images/clients/client-logo-36.png",  name: "جامعة أم القرى",                              url: "https://www.uqu.edu.sa",          country: "sa" },
+  { src: "/images/clients/client-logo-48.png",  name: "تكامل",                                       url: "https://www.takamolholding.com",  country: "sa" },
+  // ── International / Regional ───────────────────────────────────────────
+  { src: "/images/clients/client-logo-32.jpeg", name: "حكومة دبي",                                   url: "https://www.dubai.ae",            country: "international" },
+  { src: "/images/clients/client-logo-27.png",  name: "مستشفيات دار الفؤاد",                         url: "https://www.daralfouad.org",      country: "international" },
+  { src: "/images/clients/client-logo-28.jpeg", name: "عصفور كريستال",                               url: "https://www.asfourcrystal.com",   country: "international" },
+  // ── Unclear — visually present but URL unconfirmed ─────────────────────
+  { src: "/images/clients/client-logo-01.jpeg", name: "MBCC",                                        url: null, country: "unknown" },
+  { src: "/images/clients/client-logo-02.png",  name: "Z Corporate",                                 url: null, country: "unknown" },
+  { src: "/images/clients/client-logo-13.png",  name: "DULANI",                                      url: null, country: "unknown" },
+  { src: "/images/clients/client-logo-15.jpeg", name: "HUNAK",                                       url: null, country: "unknown" },
+  { src: "/images/clients/client-logo-19.png",  name: "Multipack Industries",                        url: null, country: "unknown" },
+  { src: "/images/clients/client-logo-29.jpeg", name: "Hassab Labs",                                 url: null, country: "unknown" },
+  { src: "/images/clients/client-logo-30.png",  name: "Heliopolis Developers Group",                 url: null, country: "international" },
+  { src: "/images/clients/client-logo-40.png",  name: "عميل",                                        url: null, country: "unknown" },
+  { src: "/images/clients/client-logo-45.png",  name: "عميل",                                        url: null, country: "unknown" },
+  { src: "/images/clients/client-logo-49.png",  name: "HRC",                                         url: null, country: "unknown" },
 ];
 
 const SERVICE_ICONS = [
@@ -129,14 +132,25 @@ function ClientLogoCard({ logo }: { logo: ClientLogo }) {
       className="max-h-16 md:max-h-20 max-w-[85%] w-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300 group-hover:scale-105"
     />
   );
-  if (logo.site) {
+  if (logo.url) {
     return (
-      <a href={logo.site} target="_blank" rel="noopener noreferrer" title={logo.name} aria-label={logo.name} className={cardClass}>
+      <a
+        href={logo.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        title={logo.name}
+        aria-label={`Visit ${logo.name} website`}
+        className={cardClass}
+      >
         {img}
       </a>
     );
   }
-  return <div className={cardClass} title={logo.name} aria-label={logo.name}>{img}</div>;
+  return (
+    <div className={cardClass} title={logo.name} aria-label={logo.name}>
+      {img}
+    </div>
+  );
 }
 
 /** Arrow that points forward in the current layout direction */
